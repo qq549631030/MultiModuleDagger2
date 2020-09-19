@@ -2,10 +2,11 @@ package cn.hx.news
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import cn.hx.base.BaseActivity
 import kotlinx.android.synthetic.main.activity_news.*
 import javax.inject.Inject
 
-class NewsActivity : AppCompatActivity() {
+class NewsActivity : BaseActivity() {
 
     @Inject
     lateinit var set: Set<String>
@@ -13,7 +14,6 @@ class NewsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_news)
-        NewsComponentHolder.newsComponent.inject(this)
         text.text = set.toString()
     }
 }

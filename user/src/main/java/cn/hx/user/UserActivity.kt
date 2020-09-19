@@ -1,11 +1,11 @@
 package cn.hx.user
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import cn.hx.base.BaseActivity
 import kotlinx.android.synthetic.main.activity_user.*
 import javax.inject.Inject
 
-class UserActivity : AppCompatActivity() {
+class UserActivity : BaseActivity() {
 
     @Inject
     lateinit var set: Set<String>
@@ -13,7 +13,6 @@ class UserActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user)
-        UserComponentHolder.userComponent.inject(this)
         text.text = set.toString()
     }
 }
