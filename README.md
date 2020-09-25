@@ -2,16 +2,7 @@
 
 使用dependencies方式
 
-```mermaid
-graph TB
-app --- news0[news]
-app --- user0[user]
-news0 --- base0[base]
-user0 --- base0
-user1[user] --- base1[base]
-news1[news] --- base2[base]
-
-```
+![](images/image1.jpg)
 
 在组件化多模块项目中，app模块只在最终打包的时候直接依赖user,news模块，当user,news作为单独APP来运行时与app不存在依赖关系了，所以Appcomponent不能放在app模块中了这种情况下应该放在base中。
 
@@ -24,7 +15,11 @@ base模块中
 ```kotlin
 @Module
 class AppModule {
-
+    @IntoSet
+    @Provides
+    fun provideString(): String {
+        return "app"
+    }
 }
 ```
 
@@ -61,6 +56,11 @@ user模块
 ```kotlin
 @Module
 class UserModule {
+    @IntoSet
+    @Provides
+    fun provideString(): String {
+        return "user"
+    }
 }
 ```
 
@@ -68,6 +68,7 @@ class UserModule {
 @UserScope
 @Component(modules = [UserModule::class], dependencies = [AppComponent::class])
 interface UserComponent {
+    fun inject(userActivity: UserActivity)
 }
 ```
 
@@ -76,6 +77,11 @@ news模块
 ```kotlin
 @Module
 class NewsModule {
+    @IntoSet
+    @Provides
+    fun provideString(): String {
+        return "news"
+    }
 }
 ```
 
@@ -83,6 +89,7 @@ class NewsModule {
 @NewsScope
 @Component(modules = [NewsModule::class], dependencies = [AppComponent::class])
 interface NewsComponent {
+    fun inject(newsActivity: NewsActivity)
 }
 ```
 
@@ -110,6 +117,36 @@ object UserComponentHolder {
         DaggerUserComponent.builder()
             .appComponent(BaseApplication.instance.appComponent)
             .build()
+    }
+}
+```
+
+最后在Activity中使用和前一篇一样
+
+```kotlin
+class NewsActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var set: Set<String>
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_news)
+        NewsComponentHolder.newsComponent.inject(this)
+        text.text = set.toString()
+    }
+}
+
+class UserActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var set: Set<String>
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_user)
+        UserComponentHolder.userComponent.inject(this)
+        text.text = set.toString()
     }
 }
 ```
